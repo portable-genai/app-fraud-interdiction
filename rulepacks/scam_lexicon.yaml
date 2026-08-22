@@ -1,0 +1,40 @@
+# Scam-coaching lexicon (FICTIONAL phrases, invented for this synthetic repo).
+#
+# These are the cues a scam victim is talked into saying while authorising a transfer: the
+# "do not tell the bank" script, the fake-authority pressure, the coached cover story. They live
+# in THIS repo, not in speech-lexicon-kit: the kernel carries the phrase matcher, the vertical
+# carries the phrases, so a wording change is a pack edit here rather than a release of a package
+# every consumer pins. A hit is a FEATURE for the engine, never a verdict.
+lexicon_id: scam-cues-en
+locale: en
+version: v1
+
+entries:
+  - entry_id: coached-secrecy
+    tags: [pressure, secrecy]
+    phrases:
+      - phrase_id: dont-tell-the-bank
+        text: "do not tell the bank"
+      - phrase_id: keep-this-between-us
+        text: "keep this between us"
+  - entry_id: fake-authority
+    tags: [impersonation]
+    phrases:
+      - phrase_id: from-the-fraud-team
+        text: "i am from the fraud team"
+      - phrase_id: your-account-is-compromised
+        text: "your account is compromised"
+  - entry_id: coached-cover-story
+    tags: [cover_story]
+    phrases:
+      - phrase_id: paying-a-friend
+        text: "i am just paying a friend"
+      - phrase_id: moving-to-a-safe-account
+        text: "moving my money to a safe account"
+  - entry_id: urgency-pressure
+    tags: [pressure, urgency]
+    phrases:
+      - phrase_id: must-do-it-now
+        text: "i must do it right now"
+      - phrase_id: or-i-lose-everything
+        text: "or i will lose everything"

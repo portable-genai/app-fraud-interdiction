@@ -1,0 +1,66 @@
+# Singapore scam / authorised-push-payment interdiction pack (FICTIONAL policy numbers).
+#
+# The instrument name and clause locators are invented for this synthetic repo; they stand in for
+# a real regulator's payment-services notice. Thresholds are the CLIENT's to own: a deployment
+# tunes these numbers to its risk appetite without touching engine code. The engine has no
+# Singapore branch; it reads this file.
+market: SG
+instrument: "MAS-PSN08-FICTIONAL"
+version: "2026.08"
+baseline_score: 0
+
+# Score cutoffs that turn a score into an action. Non-decreasing, validated at load.
+thresholds:
+  warn: 25
+  hold: 45
+  block: 75
+
+# Score cutoffs that map a score to an advisory risk band.
+bands:
+  medium: 25
+  high: 50
+  critical: 80
+
+rules:
+  - code: SG-NEW-PAYEE
+    title: "First payment to a newly added payee"
+    feature: new_payee
+    op: ">="
+    threshold: 1
+    uplift: 25
+    locator: "cl-3.1"
+  - code: SG-HIGH-AMOUNT
+    title: "Payment amount above the enhanced-scrutiny floor"
+    feature: amount_major
+    op: ">="
+    threshold: 5000
+    uplift: 20
+    locator: "cl-3.2"
+  - code: SG-YOUNG-PAYEE
+    title: "Payee account opened within the last week"
+    feature: payee_age_days
+    op: "<="
+    threshold: 7
+    uplift: 20
+    locator: "cl-4.1"
+  - code: SG-RAPID-VELOCITY
+    title: "Unusual number of outbound payments in 24 hours"
+    feature: velocity_24h
+    op: ">="
+    threshold: 5
+    uplift: 15
+    locator: "cl-4.2"
+  - code: SG-DEVICE-CHANGE
+    title: "Payment authorised from a newly seen device"
+    feature: device_change
+    op: ">="
+    threshold: 1
+    uplift: 15
+    locator: "cl-5.1"
+  - code: SG-SCAM-CALL-CUES
+    title: "Scam-coaching cues detected on a linked call"
+    feature: scam_call_lexicon_hits
+    op: ">="
+    threshold: 2
+    uplift: 30
+    locator: "cl-6.1"

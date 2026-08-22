@@ -1,0 +1,63 @@
+# Australia scam-prevention / authorised-push-payment interdiction pack (FICTIONAL policy numbers).
+#
+# Stands in for an Australian scam-prevention framework duty. Different thresholds from the SG pack
+# on purpose: per-market verdict metrics are reported separately in the eval, and the engine code
+# is identical for both because every number that differs is here, not in the engine.
+market: AU
+instrument: "AU-SPF-DUTY-FICTIONAL"
+version: "2026.08"
+baseline_score: 0
+
+thresholds:
+  warn: 30
+  hold: 50
+  block: 80
+
+bands:
+  medium: 30
+  high: 55
+  critical: 85
+
+rules:
+  - code: AU-NEW-PAYEE
+    title: "First payment to a newly added payee"
+    feature: new_payee
+    op: ">="
+    threshold: 1
+    uplift: 20
+    locator: "s-4"
+  - code: AU-HIGH-AMOUNT
+    title: "Payment amount above the enhanced-scrutiny floor"
+    feature: amount_major
+    op: ">="
+    threshold: 10000
+    uplift: 25
+    locator: "s-5"
+  - code: AU-YOUNG-PAYEE
+    title: "Payee account opened within the last three days"
+    feature: payee_age_days
+    op: "<="
+    threshold: 3
+    uplift: 25
+    locator: "s-6"
+  - code: AU-RAPID-VELOCITY
+    title: "Unusual number of outbound payments in 24 hours"
+    feature: velocity_24h
+    op: ">="
+    threshold: 4
+    uplift: 15
+    locator: "s-7"
+  - code: AU-DEVICE-CHANGE
+    title: "Payment authorised from a newly seen device"
+    feature: device_change
+    op: ">="
+    threshold: 1
+    uplift: 10
+    locator: "s-8"
+  - code: AU-SCAM-CALL-CUES
+    title: "Scam-coaching cues detected on a linked call"
+    feature: scam_call_lexicon_hits
+    op: ">="
+    threshold: 2
+    uplift: 35
+    locator: "s-9"
