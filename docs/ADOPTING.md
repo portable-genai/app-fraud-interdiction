@@ -201,8 +201,8 @@ Hrz1, Hrz5 and Hrz4.
   The audit half is local and tamper-evident today; pointing it at the shared sink is rule R2.
 - **Hrz7** human-review and maker-checker console: every hold and block is ROUTED there over the
   shared `review-kit` in the same request that produced it (rule R8). You wire your
-  endpoint (`HRZ_HUMAN_REVIEW_URL`) and the outbound `HRZ7_S2S_TOKEN` /
-  `HRZ7_S2S_SIGNING_KEY` pair. You do not re-implement the console.
+  endpoint (`HUMAN_REVIEW_URL`) and the outbound `HUMAN_REVIEW_S2S_TOKEN` /
+  `HUMAN_REVIEW_S2S_SIGNING_KEY` pair. You do not re-implement the console.
 - **Rsk3** architecture and requirements validator: an intake action, not a code control. Record
   your validation reference in `COMPLIANCE.md` when the project passes it (rule R6).
 
