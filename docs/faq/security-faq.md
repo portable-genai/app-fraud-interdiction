@@ -77,8 +77,8 @@ written reason; `ui/tests/three-state-env-reads.test.mjs` applies the same rule 
 
 The real one is the Hrz7 review submission (`adapters/gcp/review_router.py`), built on the shared
 `review-kit`, which is pure stdlib `urllib` with S2S headers wire-compatible with
-`hex-service-kit`'s server verifier. Its credentials are the OUTBOUND pair `HRZ7_S2S_TOKEN` /
-`HRZ7_S2S_SIGNING_KEY`, deliberately distinct variables from this service's own INBOUND
+`hex-service-kit`'s server verifier. Its credentials are the OUTBOUND pair `HUMAN_REVIEW_S2S_TOKEN` /
+`HUMAN_REVIEW_S2S_SIGNING_KEY`, deliberately distinct variables from this service's own INBOUND
 `SCAMINTERDICT_S2S_TOKEN`, so one leaking never grants the other. The Hrz4 promotion client
 (`adapters/gcp/evaluation.py`) is the other, built on `agent-eval-kit`. The managed review router
 refuses to run with no console configured rather than swallowing an escalation.
