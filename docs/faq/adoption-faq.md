@@ -97,7 +97,7 @@ It is guarded from two directions. A demo step exists in exactly two places, `de
 offline gate, so a narrated claim nobody verifies cannot exist. `make demo-selftest` runs the
 whole eight-step arc headless and unattended, asserting at each step that the service actually
 reached the state the narration claimed, and the demo has its own required workflow
-(`.github/workflows/demo-gate.yaml`) alongside `make portability`, `make demo-static` and
+(the hosted Cloud Build check) alongside `make portability`, `make demo-static` and
 `make docs-check`. Put the numbers a check reads in the step's `facts` dict, never only in
 rendered prose: a check that parses prose breaks on a wording change. Do not move the demo into
 `make gate`, which must stay fast and offline.
