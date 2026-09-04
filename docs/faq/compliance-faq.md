@@ -9,7 +9,7 @@ map with an evidence column, plus the adopter-owned crosswalk), [`../../SPEC.md`
 
 The deterministic engine ORDERS a verdict; a human disposes of the consequential ones. A `HOLD`
 or a `BLOCK` (`domain/kernel.CONSEQUENTIAL_VERDICTS`) sets `requires_human_review` AND is routed
-to the **Hrz7** Human-Review and Maker-Checker Console through the shared `review-kit` in the
+to the `human-review-console` through the shared `review-kit` in the
 same call that produced it (dependency rule R8), on the API, the CLI and the agent surface alike.
 A `BLOCK` requires two approvals (`_DUAL_CONTROL` in `adapters/_review_payload.py`), because
 stopping a customer's money is a two-person decision. The escalation is not a per-repo boolean:
@@ -35,14 +35,14 @@ job, not a vendor default to inherit unexamined.
 Unlike an aggregate-data service, this one does see potentially personal text: the free-text
 payment memo and, when a call is linked, an already-diarized transcript. So redaction is
 unconditional and happens at every boundary before anything leaves the process: before the WORM
-audit write, before the Hrz7 payload (scrubbed against every jurisdiction's rows, not just the
+audit write, before the `human-review-console` payload (scrubbed against every jurisdiction's rows, not just the
 deployment's own, because the console is a shared sink, and including the event id before it
 becomes the subject or the idempotency key), and before a tool result can become model context.
 The pattern rows and their ORDER are this vertical's choice (`JURISDICTIONS` in `domain/pii.py`,
 national-ID rows first and universal email and phone rows last); set them for the markets you
 serve. Parties on a `PaymentEvent` are opaque references tokenised upstream, and money is carried
 in integer minor units so a verdict is byte-identical on replay. The runtime guardrail and DLP
-engine itself is the sibling **Hrz1** gateway, which this repo does NOT bind yet: rule R1 is
+engine itself is the sibling `agent-guardrail-gateway`, which this repo does NOT bind yet: rule R1 is
 marked Partial for exactly that reason, which is survivable today only because no live model call
 exists.
 
@@ -57,7 +57,7 @@ reasons over the payment's own `as_of`) and no I/O, and `signal_key` is a SHA-25
 the event, score, verdict and fired rule codes, so two runs diff exactly. The audit trail is
 hash-chained AND externally anchored, because a truncated tail leaves a shorter chain that still
 verifies; once store and anchor disagree the service refuses to append rather than re-anchoring.
-The enterprise WORM sink is **Hrz5**; the in-repo chain is the offline stand-in, and
+The enterprise WORM sink is `agent-observability`; the in-repo chain is the offline stand-in, and
 [security-faq.md](security-faq.md) states its exact limits.
 
 ### Is data residency enforced, or only documented?
@@ -83,15 +83,15 @@ generator lazily imports the SDK and raises, it is listed in
 is bound. What runs is a deterministic template generator. [`../model-card.md`](../model-card.md)
 records that boundary, what validates a draft, what happens to a bad one, and the controls still
 owed (a pinned model id and version, a token budget, a rate limit and a kill switch, a
-managed-profile eval run, and Hrz1 injection screening). The offline gate
+managed-profile eval run, and `agent-guardrail-gateway` injection screening). The offline gate
 (`eval/run_eval.py --mode smoke`) scores six metrics against the dataset's OWN `expected_*`
 oracle, never against the pipeline's own answer: `verdict_accuracy` plus a per-market split for
 SG and AU (0.80), `pii_safety` (0.99), `warning_groundedness` (0.99) and `review_safety` (1.0).
 Each metric is proven able to go RED before the report is trusted
 (`assert_each_can_go_red`), so a metric that cannot fail is caught as a defect. Promotion
-authority is not this repo's: `--mode gate` delegates to the sibling **Hrz4** AI-quality and
+authority is not this repo's: `--mode gate` delegates to the sibling `model-quality-gate` AI-quality and
 model-risk gate under the bundle id `app-fraud-interdiction` and refuses to run off the managed
-profile. Registering that bundle and its thresholds with Hrz4 is an open adopter step (P-08, R5).
+profile. Registering that bundle and its thresholds with `model-quality-gate` is an open adopter step (P-08, R5).
 
 ### Which regulators does this map to?
 
@@ -113,9 +113,9 @@ and n/a, and a rendered repo starts on TODO for several rows by design, because 
 control before it exists is worse than owing it. Currently open and worth knowing before you cite
 this document: P-05 grounding and rule R3 (no retrieval port exists, so there is nothing to
 ground), P-10 resilience (only the review outbox degrades correctly today), P-11 cost and latency
-(no model call to route or cache), R1 (no `GuardrailPort` bound to Hrz1), R2 (traces and audit are
-not yet in the shared Hrz5 sink), R4 (the A2A card is served but not registered with Hrz3), and
-R5 (the Hrz4 bundle is not registered). `../practices-audit.md` records the per-check verdict
+(no model call to route or cache), R1 (no `GuardrailPort` bound to `agent-guardrail-gateway`), R2 (traces and audit are
+not yet in the shared `agent-observability` sink), R4 (the A2A card is served but not registered with `agent-registry`), and
+R5 (the `model-quality-gate` bundle is not registered). `../practices-audit.md` records the per-check verdict
 against the catalog's common base practices alongside it.
 
 ### Can we run it against real payment traffic today?
@@ -125,5 +125,5 @@ number, every instrument name and every lexicon phrase in this repo is obviously
 the docs say so throughout. The adoption checklist ([`../ADOPTING.md`](../ADOPTING.md) section 6)
 lists what must precede any live use: your rule packs and lexicon signed off by a policy owner,
 your PII jurisdictions set, your fixtures replaced, your golden set rebuilt, your IdP wired, your
-residency region set in both Terraform and the application, your Hrz7 endpoint configured, and
+residency region set in both Terraform and the application, your `human-review-console` endpoint configured, and
 the managed placeholders implemented and integration-tested.

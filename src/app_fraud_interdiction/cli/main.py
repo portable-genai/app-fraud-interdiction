@@ -33,7 +33,8 @@ def _tenant(args: argparse.Namespace, container: Container) -> str:
     """The data scope for this invocation: the flag when given, else the configured tenant.
 
     The CLI runs with the DEPLOYMENT's identity, so the calls it may read are the deployment's
-    own. It is the same flag that already named the Hrz7 partition, because the tenant a call
+    own. It is the same flag that already named the human-review-console partition, because the
+    tenant a call
     belongs to and the tenant a review is filed under are one vocabulary, not two.
     """
     return str(getattr(args, "tenant", "") or container.settings.tenant)
@@ -53,7 +54,9 @@ def main(argv: list[str] | None = None) -> int:
     one.add_argument("--memo", default="")
     one.add_argument("--call-ref", default="", help="Linked scam-call reference, if any.")
     one.add_argument("--actor", default="cli-user@bank.example")
-    one.add_argument("--tenant", default="", help="Tenant partition asserted to Hrz7.")
+    one.add_argument(
+        "--tenant", default="", help="Tenant partition asserted to human-review-console."
+    )
 
     stream = sub.add_parser("stream", help="Replay the scripted in-flight payment stream.")
     stream.add_argument("--market", default="", help="Filter to one market code.")

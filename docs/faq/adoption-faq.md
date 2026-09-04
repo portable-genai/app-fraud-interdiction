@@ -13,7 +13,7 @@ prefix, the distribution and resource id `app-fraud-interdiction`, and optionall
 too with `--include-docs`. Then recreate the venv, `make install`, and run `make gate`. There is
 no `--cli` flag (the console script is named after the package, so a second flag could only
 drift) and no `--dist` flag (`--resource` is one literal doing four jobs: the distribution name,
-the GitHub id, the A2A agent-card name and the Hrz4 eval bundle id, deliberately the same string
+the GitHub id, the A2A agent-card name and the `model-quality-gate` eval bundle id, deliberately the same string
 so a fork's promotion record and its discovery card cannot disagree). The script does the
 mechanical rename; the human decisions are the checklist in `ADOPTING.md`.
 

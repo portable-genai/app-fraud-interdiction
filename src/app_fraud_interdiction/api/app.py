@@ -283,7 +283,8 @@ def interdict(
 
     The verdict, score and band come from the deterministic engine, so a model can never move a
     hold or a block. Rule R8: a hold or block sets ``requires_human_review`` and is ROUTED to the
-    Hrz7 console here, in the same request that produced it. The maker is the verified principal,
+    human-review-console here, in the same request that produced it. The maker is the verified
+    principal,
     so the console records who originated the decision.
     """
     container = _container()

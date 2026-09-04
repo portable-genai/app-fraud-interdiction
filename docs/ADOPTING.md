@@ -40,7 +40,7 @@ and no market branch at all. It reads `RulePack.baseline_score`, the per-rule `u
 `rulepacks/<market>.yaml` file plus one row in `MARKET_FILES` (`rulepacks_loader.py`) and one
 locale row, never an engine edit. If your product is another deterministic financial crime
 decision (screening, alert triage, takeover scoring), the hexagon, the three profiles, the
-redact-before-audit rule, the grounded-or-fallback warning pattern, the eval gate and the Hrz7
+redact-before-audit rule, the grounded-or-fallback warning pattern, the eval gate and the `human-review-console`
 routing all transfer directly.
 
 ## 2. Core-vs-adopter-owned files (so upstream merges stay mechanical)
@@ -92,7 +92,7 @@ Three things about the flags are worth knowing before you run it:
   `--package` renames it too; a second flag could only drift out of step with the first.
 - There is deliberately **no `--dist` flag**. `--resource` is one literal doing four jobs: the
   distribution name in `pyproject.toml`, the GitHub id in `[project.urls]`, the A2A agent-card
-  name (`agent/agent_card.py`) and the Hrz4 eval bundle id (`_BUNDLE` in `eval/run_eval.py` and
+  name (`agent/agent_card.py`) and the `model-quality-gate` eval bundle id (`_BUNDLE` in `eval/run_eval.py` and
   in `adapters/gcp/evaluation.py`). They are the same string on purpose, so a fork's promotion
   record and its discovery card cannot disagree about which system they describe.
 - `--name-prefix` is optional and is rewritten ONLY inside its own variable block in
@@ -150,7 +150,7 @@ reviewable. The script deliberately does NOT touch the human decisions below.
 5. **Redaction scope.** `JURISDICTIONS` in `domain/pii.py` selects which national-ID pattern rows
    the audit write masks with, and the order matters (national rows first, universal email and
    phone rows last). The outbound review payload is scrubbed harder, against EVERY jurisdiction's
-   rows (`adapters/_review_payload.py`), because the Hrz7 console is a shared sink. Set your
+   rows (`adapters/_review_payload.py`), because the `human-review-console` is a shared sink. Set your
    jurisdictions before you point this at anything real.
 6. **Fixtures and reference data are fictional, all of them.** The local feature store, the
    scripted payment stream and the scripted call transcripts (`adapters/local/_fixture_data.py`),
@@ -182,28 +182,28 @@ reviewable. The script deliberately does NOT touch the human decisions below.
 This repo is one system in a catalog of composable GRC systems. Several concerns it *touches* are
 owned by sibling platform services; integrate rather than rebuild them (see
 [`faq/features-faq.md`](faq/features-faq.md) for the full map). G3's mandatory dependencies are
-Hrz1, Hrz5 and Hrz4.
+`agent-guardrail-gateway`, `agent-observability` and `model-quality-gate`.
 
-- **Hrz1** guardrail gateway: NOT integrated yet, and honestly marked as such (`COMPLIANCE.md`
+- `agent-guardrail-gateway`: NOT integrated yet, and honestly marked as such (`COMPLIANCE.md`
   rule R1). Redaction is in place at every boundary, but there is no `GuardrailPort`. Bind one
   before untrusted text (a customer memo, a call transcript) reaches a live model.
-- **Hrz2** governed knowledge base: not used. This vertical retrieves nothing, so rule R3 reads
+- `enterprise-knowledge-base` governed knowledge base: not used. This vertical retrieves nothing, so rule R3 reads
   `n/a today` and P-05 is an open TODO. A fork that adds retrieval takes both on.
-- **Hrz3** agent registry: the A2A card is built and served at `/.well-known/agent-card.json`
+- `agent-registry`: the A2A card is built and served at `/.well-known/agent-card.json`
   from the same tool table the runtime binds (`agent/agent_card.py`). Registering it and taking
-  the agent's identity and entitlements from Hrz3 is the adopter's step (rule R4).
-- **Hrz4** AI-quality and model-risk gate: owns promotion. `eval/run_eval.py --mode gate`
+  the agent's identity and entitlements from `agent-registry` is the adopter's step (rule R4).
+- `model-quality-gate`: owns promotion. `eval/run_eval.py --mode gate`
   delegates the verdict through `agent_eval_kit.PromotionGateClient` under the bundle id
   `app-fraud-interdiction` and refuses to run off the managed profile; registering that bundle
-  and its thresholds with Hrz4 is yours (P-08, rule R5).
-- **Hrz5** observability and immutable WORM audit: `adapters/gcp/tracer.py` sends OTLP to the
-  Hrz5 collector when `OTEL_EXPORTER_OTLP_ENDPOINT` is set and to Cloud Trace when it is not.
+  and its thresholds with `model-quality-gate` is yours (P-08, rule R5).
+- `agent-observability` and immutable WORM audit: `adapters/gcp/tracer.py` sends OTLP to the
+  `agent-observability` collector when `OTEL_EXPORTER_OTLP_ENDPOINT` is set and to Cloud Trace when it is not.
   The audit half is local and tamper-evident today; pointing it at the shared sink is rule R2.
-- **Hrz7** human-review and maker-checker console: every hold and block is ROUTED there over the
+- `human-review-console` human-review and maker-checker console: every hold and block is ROUTED there over the
   shared `review-kit` in the same request that produced it (rule R8). You wire your
   endpoint (`HUMAN_REVIEW_URL`) and the outbound `HUMAN_REVIEW_S2S_TOKEN` /
   `HUMAN_REVIEW_S2S_SIGNING_KEY` pair. You do not re-implement the console.
-- **Rsk3** architecture and requirements validator: an intake action, not a code control. Record
+- `architecture-validator` architecture and requirements validator: an intake action, not a code control. Record
   your validation reference in `COMPLIANCE.md` when the project passes it (rule R6).
 
 Adjacent financial crime verticals are separate systems, not features to absorb here: **G1** AML
@@ -229,6 +229,6 @@ a confirmed scam belongs to those systems.
       metric names your fork uses.
 - [ ] Reviewed the deploy posture (Dockerfile, all of `infra/terraform/`, the bind address) and
       cleared `INCOMPLETE_MANAGED_OPERATIONS` before serving the managed profile.
-- [ ] Wired your Hrz7 endpoint, decided which sibling systems you integrate vs stub, and bound a
-      Hrz1 guardrail before any live model sees untrusted text.
+- [ ] Wired your `human-review-console` endpoint, decided which sibling systems you integrate vs stub, and bound a
+      `agent-guardrail-gateway` before any live model sees untrusted text.
 - [ ] Recorded your baseline upstream tag so you can take future fixes.

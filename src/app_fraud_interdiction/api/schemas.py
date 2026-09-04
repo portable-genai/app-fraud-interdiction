@@ -64,7 +64,8 @@ class InterdictResponse(BaseModel):
     warning_source: str
     requires_human_review: bool
     signal_key: str
-    #: Where the escalation WENT (rule R8): the Hrz7 review id, or the local queue reference.
+    #: Where the escalation WENT (rule R8): the human-review-console review id, or the local queue
+    #: reference.
     #: Empty only when the verdict was not consequential (allow / warn).
     review_ref: str = ""
     reason_codes: list[ReasonCodeModel] = []
