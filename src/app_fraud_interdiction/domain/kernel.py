@@ -45,7 +45,8 @@ class Verdict(LenientStrEnum):
     """The action the deterministic engine ordered on an in-flight payment.
 
     Ordered from least to most restrictive. ``HOLD`` and ``BLOCK`` are consequential: they set
-    ``requires_human_review`` and route to the Hrz7 console (rule R8), and no model can produce
+    ``requires_human_review`` and route to the human-review-console (rule R8), and no model can
+    produce
     or change them.
     """
 

@@ -6,9 +6,8 @@ Two named layers via ``--mode`` (the scaffold is ``agent_eval_kit.eval_main``):
 * **smoke** (default) - the offline pre-merge check CI runs on every change: it drives the real
   ``InterdictionService`` against a golden set with SDK-free local adapters and scores the metrics
   below, each against the dataset's OWN ``expected_*`` oracle, never against the pipeline's own
-  verdict.
-* **gate** - the promotion verdict from the shared Hrz4 authority (requires the ``gcp`` profile),
-  via ``agent_eval_kit.PromotionGateClient``.
+  verdict. * **gate** - the promotion verdict from the shared model-quality-gate authority (requires
+  the ``gcp`` profile), via ``agent_eval_kit.PromotionGateClient``.
 
 Every metric is proven able to go RED before the report is trusted
 (``agent_eval_kit.assert_each_can_go_red``): a metric that cannot fail, or that reads the
@@ -56,7 +55,8 @@ THRESHOLDS: dict[str, float] = {
     "warning_groundedness": 0.99,
     "review_safety": 1.0,
 }
-#: The registered Hrz4 metric bundle for this vertical (Hrz4 owns the metrics + thresholds).
+#: The registered model-quality-gate metric bundle for this vertical (model-quality-gate owns the
+#: metrics + thresholds).
 _BUNDLE = "app-fraud-interdiction"
 
 
@@ -294,6 +294,6 @@ if __name__ == "__main__":
             smoke=run_smoke,
             gate=run_gate,
             default_dataset=DEFAULT_DATASET,
-            description="Offline / Hrz4 evaluation gate for G3.",
+            description="Offline / model-quality-gate for G3.",
         )
     )

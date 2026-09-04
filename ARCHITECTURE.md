@@ -58,8 +58,8 @@ data only). `contract/canonical.py` holds ONE canonical request per port, so the
 behavioural suites cannot quietly assert different things.
 
 ## Request pipeline (`InterdictionService.assess`, then the caller)
-deterministic verdict (allow/warn/hold/block) -> grounded-or-fallback warning -> redact-before-audit (P-04) -> route hold/block to Hrz7 (R8) -> already
-redacted WORM audit write -> **route the escalation to Hrz7 (R8)**. The audit actor and the
+deterministic verdict (allow/warn/hold/block) -> grounded-or-fallback warning -> redact-before-audit (P-04) -> route hold/block to `human-review-console` (R8) -> already
+redacted WORM audit write -> **route the escalation to `human-review-console` (R8)**. The audit actor and the
 review maker are both the verified `Principal`, never the request body. Routing happens in the
 same request that produced the result, on the API and CLI surfaces alike, so an escalation never
 depends on a later job that may not exist.
@@ -69,7 +69,7 @@ depends on a later job that may not exist.
 |---|---|---|---|
 | `AuditSinkPort` | hash-chained SQLite WORM (commons) | Cloud Logging WORM (lazy) | placeholder |
 | `IdentityPort` | seeded personas (commons) | IAP assertion (lazy) | placeholder |
-| `ReviewRouterPort` | review-kit outbox (offline, inspectable) | Hrz7 service intake over S2S | placeholder |
+| `ReviewRouterPort` | review-kit outbox (offline, inspectable) | `human-review-console` service intake over S2S | placeholder |
 
 The on-prem placeholders RAISE. A review router that silently returned would convert every
 consequential result into an unreviewed one, which is worse than a missing feature.

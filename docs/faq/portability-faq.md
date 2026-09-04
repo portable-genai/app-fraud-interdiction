@@ -97,7 +97,7 @@ pack and diff exactly.
 
 Three things, stated rather than hidden. First, tamper-evidence and export-reload are scoped to
 what the local sink can prove; production tamper-evidence is the locked Cloud Logging bucket and
-**Hrz5**, reached through the managed audit adapter. Second, four managed adapters are
+`agent-observability`, reached through the managed audit adapter. Second, four managed adapters are
 construction-only today (`CcaiConversationChannel.fetch`, `VertexFeatureStore.features_for`,
 `BigQueryPaymentStream.poll`, `VertexWarningGenerator.draft`), so the `gcp` profile is a proven
 binding surface rather than a proven integration, and the preflight refuses to pretend otherwise.

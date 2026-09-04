@@ -14,9 +14,9 @@ that matches your role.
 | [compliance-faq.md](compliance-faq.md) | Compliance / model risk / privacy | maker-checker, PII handling, auditability, residency enforcement, the model-risk story, regulator crosswalk |
 
 These FAQs deliberately do **not** re-document capabilities owned by sibling systems in the
-catalog. Where a concern belongs to another repo (the guardrail gateway Hrz1, the knowledge base
-Hrz2, the agent registry Hrz3, the AI-quality gate Hrz4, observability and WORM audit Hrz5, the
-human-review console Hrz7, the intake validator Rsk3, or the adjacent financial crime verticals
+catalog. Where a concern belongs to another repo (the guardrail gateway `agent-guardrail-gateway`, the knowledge base
+`enterprise-knowledge-base`, the agent registry `agent-registry`, the AI-quality gate `model-quality-gate`, observability and WORM audit `agent-observability`, the
+human-review console `human-review-console`, the intake validator `architecture-validator`, or the adjacent financial crime verticals
 G1, G2, G4 and G5), the FAQ names the owning catalog id and explains the boundary rather than
 duplicating it. See [features-faq.md](features-faq.md) for the full map, and
 [`../ADOPTING.md`](../ADOPTING.md) for the fork path.

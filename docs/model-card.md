@@ -33,7 +33,7 @@ model is a bounded, replaceable component that today has no live implementation 
 
 - **Redaction before anything leaves.** PII is masked with the shared `pii-kit` before the WORM
   audit write (`domain/interdiction_service.assess`, using the row selection and order in
-  `domain/pii.py`), before the review payload reaches Hrz7 (`adapters/_review_payload.py`, against
+  `domain/pii.py`), before the review payload reaches `human-review-console` (`adapters/_review_payload.py`, against
   every jurisdiction's rows because the console is a shared sink), and before a tool result can
   enter a model's context (`agent/tools.py::_redacted`, which walks the whole structure rather
   than three named fields). `tests/unit/test_interdiction_service.py::test_pii_in_the_memo_is_redacted_before_the_audit_write`
@@ -58,7 +58,7 @@ model is a bounded, replaceable component that today has no live implementation 
   `warning_groundedness` metric (threshold 0.99) scores the same property over the golden set.
 - **R8 human-review routing.** A `HOLD` or a `BLOCK` is consequential
   (`domain/kernel.CONSEQUENTIAL_VERDICTS`); it sets `requires_human_review` AND is routed through
-  `ReviewRouterPort` to the Hrz7 console in the same call that produced it, on all three surfaces
+  `ReviewRouterPort` to the `human-review-console` in the same call that produced it, on all three surfaces
   (`api/app.py`, `cli/main.py`, `agent/tools.py`). A `BLOCK` demands two approvals. Nothing
   auto-executes, and the model has no way to reach this path: it never sees the verdict until
   after the verdict exists. `tests/unit/test_review_routing.py` asserts the routing rather than
@@ -96,24 +96,24 @@ controls for it.
 - **A model at all, then its id, version and routing** (P-07, P-11). There is no live generation
   path yet. When one is wired: implement `VertexWarningGenerator.draft` against a real endpoint,
   add its integration test, remove the entry from `INCOMPLETE_MANAGED_OPERATIONS`, pin the exact
-  model and prompt version, and record both here. Hrz4 keys a promotion to the exact model that
+  model and prompt version, and record both here. `model-quality-gate` keys a promotion to the exact model that
   produced the evidence, so a silent model swap invalidates the old verdict.
 - **Budget, rate controls and a kill switch** (P-10, P-11). Per-tenant token budget, a request
   rate limit, a timeout and circuit breaker on the generation call, and a switch that forces
   deterministic-only operation with the model disabled. The deterministic floor already exists
   (`build_fallback_warning`), so the kill switch is a binding change rather than a new code path;
-  it is not wired or documented today. Report spend through Hrz5.
-- **A managed-profile eval run through the Hrz4 gate** (P-08, rule R5). The offline eval scores
+  it is not wired or documented today. Report spend through `agent-observability`.
+- **A managed-profile eval run through the `model-quality-gate`** (P-08, rule R5). The offline eval scores
   the deterministic offline generator, not a model: `warning_groundedness` currently measures a
-  template that cannot hallucinate. `--mode gate` delegates to Hrz4 under the bundle id
+  template that cannot hallucinate. `--mode gate` delegates to `model-quality-gate` under the bundle id
   `app-fraud-interdiction`, but that bundle and its thresholds are not registered yet, so gate
   mode has no authority to ask. Register it, then score real drafts against the same golden
   cases.
-- **Prompt-injection screening through Hrz1** (rule R1). No `GuardrailPort` exists. The customer
+- **Prompt-injection screening through `agent-guardrail-gateway`** (rule R1). No `GuardrailPort` exists. The customer
   memo and the call transcript are attacker-influenceable text; today neither reaches a model,
   which is why the gap is survivable, and the moment one does the screen must be in front of it,
   failing closed to deterministic-only when the screen is unavailable.
-- **Grounding through Hrz2** (P-05, rule R3). There is no retrieval port, so there is nothing to
+- **Grounding through `enterprise-knowledge-base`** (P-05, rule R3). There is no retrieval port, so there is nothing to
   ground and the row is honestly open rather than quietly claimed.
 
 Until these are complete the system is safe to run offline: the deterministic engine plus the

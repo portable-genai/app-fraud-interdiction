@@ -20,7 +20,7 @@ why the model seam is kept as narrow as it is.
 At every boundary, not once. Before the WORM audit write (`domain/interdiction_service.assess`,
 using the row selection and order in `domain/pii.py`), before the review payload leaves the
 process (`adapters/_review_payload.py`, scrubbed against EVERY jurisdiction's rows because the
-Hrz7 console is a shared sink, and including the event id itself before it becomes the subject,
+`human-review-console` is a shared sink, and including the event id itself before it becomes the subject,
 the case reference or the idempotency key), and before a tool result can enter a model's context
 (`agent/tools.py::_redacted`, which walks the whole result structure rather than three named
 fields, so a future field cannot arrive unmasked). Proven by
@@ -37,7 +37,7 @@ becomes a model's context and is.
 No. `api/schemas.py::InterdictRequest` carries no `actor` and no `tenant` field at all, so there
 is nothing to spoof in the body. The route depends on `get_principal`, which resolves a verified
 `Principal` server-side through the bound `IdentityPort`, and that principal is what becomes the
-audit actor and the Hrz7 maker. Under `gcp`, `adapters/gcp/identity.py` verifies the IAP-injected
+audit actor and the `human-review-console` maker. Under `gcp`, `adapters/gcp/identity.py` verifies the IAP-injected
 assertion with an explicit `audience=` (the configured `SCAMINTERDICT_IAP_AUDIENCE`) and IAP's own
 `certs_url=`, and checks the issuer itself, because `verify_token` does not; an unset or emptied
 audience REFUSES rather than verifying nothing. Under `local` the personas are seeded dev
@@ -75,11 +75,11 @@ written reason; `ui/tests/three-state-env-reads.test.mjs` applies the same rule 
 
 ## What about outbound service-to-service calls?
 
-The real one is the Hrz7 review submission (`adapters/gcp/review_router.py`), built on the shared
+The real one is the `human-review-console` review submission (`adapters/gcp/review_router.py`), built on the shared
 `review-kit`, which is pure stdlib `urllib` with S2S headers wire-compatible with
 `hex-service-kit`'s server verifier. Its credentials are the OUTBOUND pair `HUMAN_REVIEW_S2S_TOKEN` /
 `HUMAN_REVIEW_S2S_SIGNING_KEY`, deliberately distinct variables from this service's own INBOUND
-`SCAMINTERDICT_S2S_TOKEN`, so one leaking never grants the other. The Hrz4 promotion client
+`SCAMINTERDICT_S2S_TOKEN`, so one leaking never grants the other. The `model-quality-gate` promotion client
 (`adapters/gcp/evaluation.py`) is the other, built on `agent-eval-kit`. The managed review router
 refuses to run with no console configured rather than swallowing an escalation.
 
@@ -113,15 +113,15 @@ anchor disagree the service refuses to append rather than re-anchoring, so an or
 cannot launder a divergence. `tests/unit/test_audit_anchor.py` proves both halves including the
 control case that fails without the anchor. This is not a substitute for the managed WORM sink in
 production: that is the locked Cloud Logging bucket (`infra/terraform/logging_worm.tf`) and,
-enterprise-wide, **Hrz5**.
+enterprise-wide, `agent-observability`.
 
 ## What is explicitly out of scope for this repo?
 
-The prompt-injection and output-screening engine (**Hrz1**, and note it is NOT bound yet, which
-`COMPLIANCE.md` rule R1 states plainly), the governed knowledge base (**Hrz2**), the agent
-registry (**Hrz3**), the AI-quality and promotion gate (**Hrz4**), the enterprise WORM audit and
-tracing sink (**Hrz5**), the human-review console (**Hrz7**), and the intake architecture
-validator (**Rsk3**). This repo integrates those through ports rather than re-implementing them.
+The prompt-injection and output-screening engine (`agent-guardrail-gateway`, and note it is NOT bound yet, which
+`COMPLIANCE.md` rule R1 states plainly), the governed knowledge base (`enterprise-knowledge-base`), the agent
+registry (`agent-registry`), the AI-quality and promotion gate (`model-quality-gate`), the enterprise WORM audit and
+tracing sink (`agent-observability`), the human-review console (`human-review-console`), and the intake architecture
+validator (`architecture-validator`). This repo integrates those through ports rather than re-implementing them.
 Speech recognition is also out of scope: `ports/speech.py` re-exports the kernel's STT, TTS and
 diarization protocols for one import site, but none of them is bound in the container, so no
 audio is processed here. See [features-faq.md](features-faq.md) for the full boundary map and

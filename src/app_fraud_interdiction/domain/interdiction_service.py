@@ -1,12 +1,12 @@
 """The interdiction orchestrator: deterministic verdict, grounded warning, redact-before-audit.
 
 This is the pure-stdlib heart of the vertical. It pulls cited features for a payment, runs the
-deterministic engine (whose verdict a model can never move), optionally folds in scam-cue hits
-from a linked call, drafts a customer warning through the one model seam, VALIDATES that draft
-against the engine's own output and discards it for a deterministic fallback on any failure, then
-redacts and writes a WORM audit record. It routes nothing itself: rule R8 routing to the Hrz7
-console is the surfaces' job, so the same escalation is routed once, on whichever surface produced
-it (``api/app.py``, ``cli/main.py``, ``agent/tools.py``).
+deterministic engine (whose verdict a model can never move), optionally folds in scam-cue hits from
+a linked call, drafts a customer warning through the one model seam, VALIDATES that draft against
+the engine's own output and discards it for a deterministic fallback on any failure, then redacts
+and writes a WORM audit record. It routes nothing itself: rule R8 routing to the
+human-review-console is the surfaces' job, so the same escalation is routed once, on whichever
+surface produced it (``api/app.py``, ``cli/main.py``, ``agent/tools.py``).
 
 Everything here is injected as a port Protocol or a pure value, so nothing in this module imports
 a web framework, a cloud SDK or a YAML parser: the packs and the lexicon are handed in already
