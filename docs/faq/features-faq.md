@@ -58,8 +58,9 @@ The engine ORDERS a verdict; a human disposes of the consequential ones. Every `
 `BLOCK` sets `requires_human_review` AND is routed to the `human-review-console` Human-Review and Maker-Checker
 Console through the shared `review-kit` in the same call that produced it (dependency rule
 R8), on the API, the CLI and the agent tool alike. A `BLOCK` demands two approvals. The payload
-is redacted before the wire, and the managed router REFUSES when no console is configured rather
-than swallowing the escalation. Whether your payment rail acts on a hold is your integration
+is redacted before the wire, the managed profile refuses to boot with routing on and no console
+configured, and every response says in `review_routing` whether the hold was routed, failed, or
+not routed because routing is switched off. Whether your payment rail acts on a hold is your integration
 decision, downstream of this service.
 
 ### Which capabilities does this repo own vs integrate from the catalog?

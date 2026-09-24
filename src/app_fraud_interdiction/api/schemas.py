@@ -3,6 +3,7 @@
 from __future__ import annotations
 
 from datetime import datetime
+from typing import Literal
 
 from pydantic import BaseModel
 
@@ -65,15 +66,21 @@ class InterdictResponse(BaseModel):
     requires_human_review: bool
     signal_key: str
     #: Where the escalation WENT (rule R8): the human-review-console review id, or the local queue
-    #: reference.
-    #: Empty only when the verdict was not consequential (allow / warn).
+    #: reference. Empty exactly when ``review_routing`` is not ``routed``.
     review_ref: str = ""
+    #: What happened to the hand-off: routed, failed, off or not_required. ``failed`` means the
+    #: result is NOT queued for review, and the console says so.
+    review_routing: Literal["routed", "failed", "off", "not_required"] = "not_required"
     reason_codes: list[ReasonCodeModel] = []
     citations: list[CitationModel] = []
 
     @classmethod
     def from_domain(
-        cls, result: InterdictionAssessment, *, review_ref: str = ""
+        cls,
+        result: InterdictionAssessment,
+        *,
+        review_ref: str = "",
+        review_routing: str = "not_required",
     ) -> InterdictResponse:
         return cls(
             event_id=result.event_id,
@@ -86,6 +93,7 @@ class InterdictResponse(BaseModel):
             requires_human_review=result.requires_human_review,
             signal_key=result.signal_key,
             review_ref=review_ref,
+            review_routing=review_routing,  # type: ignore[arg-type]
             reason_codes=[
                 ReasonCodeModel(
                     code=reason.code,

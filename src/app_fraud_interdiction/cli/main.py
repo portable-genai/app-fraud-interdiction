@@ -11,6 +11,7 @@ import sys
 
 from hex_service_kit.logging import configure_logging
 
+from ..adapters.controls import RecordingReviewRouter
 from ..config import Container, build_container
 from ..domain.kernel import utcnow
 from ..domain.models import InterdictionAssessment, PaymentEvent
@@ -83,9 +84,9 @@ def main(argv: list[str] | None = None) -> int:
         )
         result = service.assess(event, actor=args.actor, tenant=_tenant(args, container))
         _print_assessment(result)
-        if result.requires_human_review:
-            ref = container.review_router.route(result, maker=args.actor, tenant=args.tenant)
-            print(f"  routed to human review: {ref}")
+        routing = RecordingReviewRouter(container.review_router)
+        ref = routing.route(result, maker=args.actor, tenant=args.tenant)
+        print(f"  human review hand-off : {routing.outcome.value} {ref}".rstrip())
         return 0
 
     if args.command == "stream":
@@ -93,9 +94,9 @@ def main(argv: list[str] | None = None) -> int:
         for event in events:
             result = service.assess(event, actor=args.actor, tenant=_tenant(args, container))
             _print_assessment(result)
-            if result.requires_human_review:
-                ref = container.review_router.route(result, maker=args.actor, tenant=args.tenant)
-                print(f"  routed to human review: {ref}")
+            routing = RecordingReviewRouter(container.review_router)
+            ref = routing.route(result, maker=args.actor, tenant=args.tenant)
+            print(f"  human review hand-off : {routing.outcome.value} {ref}".rstrip())
         return 0
 
     return 2  # pragma: no cover - argparse requires a subcommand

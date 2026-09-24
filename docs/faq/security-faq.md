@@ -80,8 +80,10 @@ The real one is the `human-review-console` review submission (`adapters/gcp/revi
 `hex-service-kit`'s server verifier. Its credentials are the OUTBOUND pair `HUMAN_REVIEW_S2S_TOKEN` /
 `HUMAN_REVIEW_S2S_SIGNING_KEY`, deliberately distinct variables from this service's own INBOUND
 `SCAMINTERDICT_S2S_TOKEN`, so one leaking never grants the other. The `model-quality-gate` promotion client
-(`adapters/gcp/evaluation.py`) is the other, built on `agent-eval-kit`. The managed review router
-refuses to run with no console configured rather than swallowing an escalation.
+(`adapters/gcp/evaluation.py`) is the other, built on `agent-eval-kit`. The managed profile refuses
+to boot with review routing on and no console configured, and a failed hand-off is reported as
+`review_routing: "failed"` rather than swallowed; `SCAMINTERDICT_REVIEW_ROUTING=off` is the
+stated way to run without routing.
 
 ## Are there secrets in the repo?
 
