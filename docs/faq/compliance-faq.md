@@ -13,8 +13,9 @@ to the `human-review-console` through the shared `review-kit` in the
 same call that produced it (dependency rule R8), on the API, the CLI and the agent surface alike.
 A `BLOCK` requires two approvals (`_DUAL_CONTROL` in `adapters/_review_payload.py`), because
 stopping a customer's money is a two-person decision. The escalation is not a per-repo boolean:
-`tests/unit/test_review_routing.py` asserts the ROUTING, not the flag, and the managed router
-refuses to run with no console configured rather than swallowing an escalation. What your payment
+`tests/unit/test_review_routing.py` asserts the ROUTING, not the flag, the managed profile
+refuses to boot with routing on and no console configured, and a hand-off that fails at request
+time is reported as `review_routing: "failed"` and logged rather than swallowed. What your payment
 rail does with a hold is your integration decision, outside this service.
 
 ### Who owns the thresholds, and can a model move one?
