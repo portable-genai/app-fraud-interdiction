@@ -9,9 +9,16 @@ the two distinct is how the fallback path can be tested by making a generator fa
 
 from __future__ import annotations
 
+from hex_service_kit import provenance
+
 from ...config import Settings
 from ...domain.kernel import Verdict
 from ...domain.warning import WarningRequest
+
+#: What this stub answers as, so the console's model pill names it once a warning is drafted. It is
+#: exactly what ``Settings.generator_model`` reports under ``local``, so the pill does not change
+#: name between "configured" and "answered", only state.
+STUB_MODEL = "deterministic-offline-stub"
 
 _LEADS: dict[Verdict, str] = {
     Verdict.ALLOW: "This payment was allowed after our scam checks.",
@@ -34,4 +41,5 @@ class LocalWarningGenerator:
         else:
             body = " No scam indicators were triggered."
         tail = f" If anything feels wrong, contact your bank. Reference: {request.instrument}."
+        provenance.note_model(STUB_MODEL)
         return lead + body + tail
