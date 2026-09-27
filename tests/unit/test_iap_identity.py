@@ -404,6 +404,12 @@ _REBOUND_SETTINGS = "\n".join(
         "  audit:",
         *[f"    {p}: {_PKG}.adapters.local.audit:LocalAuditAdapter" for p in ("local", "gcp")],
         f"    onprem: {_PKG}.adapters.onprem.audit:OnPremAuditAdapter",
+        "  guardrail:",
+        *[
+            f"    {p}: {_PKG}.adapters.local.guardrail:LocalHeuristicGuardrailAdapter"
+            for p in ("local", "gcp")
+        ],
+        f"    onprem: {_PKG}.adapters.onprem.guardrail:OnPremGuardrailAdapter",
         "  identity:",
         f"    local: {_PKG}.adapters.local.identity:LocalIdentityAdapter",
         f"    gcp: {_PKG}.adapters.gcp.identity:IapIdentityAdapter",

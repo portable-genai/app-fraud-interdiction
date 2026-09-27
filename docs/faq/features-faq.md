@@ -71,7 +71,7 @@ below. Do not rebuild these in a fork.
 
 | Concern | Owned by (catalog id / repo) | G3's role |
 |---|---|---|
-| Runtime guardrail: prompt-injection defence, output screening | `agent-guardrail-gateway` | NOT integrated yet (no `GuardrailPort`); honestly open as rule R1. Required before untrusted text reaches a live model |
+| Runtime guardrail: prompt-injection defence, output screening | `agent-guardrail-gateway` | bound through `GuardrailPort` (rule R1): the warning request and the draft are screened, a regional Model Armor template under `gcp` |
 | Governed RAG / ACL-aware knowledge base with citations | `enterprise-knowledge-base` | not used: this vertical retrieves nothing, so rule R3 reads `n/a today` and P-05 stays open |
 | Agent registry, versioning, identity, entitlements | `agent-registry` | serves an A2A card at `/.well-known/agent-card.json`; registering it is the adopter's step (R4) |
 | AI-quality / eval / model-risk promotion gate | `model-quality-gate` | `eval/run_eval.py --mode gate` delegates the verdict under bundle id `app-fraud-interdiction`; the offline smoke gate mirrors the thresholds (R5) |

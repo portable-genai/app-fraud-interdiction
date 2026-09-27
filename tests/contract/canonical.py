@@ -31,6 +31,8 @@ from app_fraud_interdiction.adapters.local._fixture_data import FIXTURE_TENANT
 from app_fraud_interdiction.domain.kernel import (
     AuditEvent,
     Citation,
+    Direction,
+    GuardrailVerdict,
     RiskBand,
     Verdict,
 )
@@ -154,6 +156,23 @@ def _warning_answered(_adapter: Any, result: Any) -> bool:
     return isinstance(result, str) and bool(result.strip())
 
 
+#: Benign text every guardrail implementation is handed: it must not match the local family's
+#: own block patterns, or the "offline family answers" case would look identical to a block.
+CANONICAL_GUARDRAIL_TEXT = "This payment was blocked to protect you from a likely scam."
+
+
+def _guardrail_invoke(adapter: Any) -> Any:
+    return adapter.screen(CANONICAL_GUARDRAIL_TEXT, Direction.OUTPUT)
+
+
+def _guardrail_answered(_adapter: Any, result: Any) -> bool:
+    return (
+        isinstance(result, GuardrailVerdict)
+        and result.allowed
+        and result.sanitized_text == CANONICAL_GUARDRAIL_TEXT
+    )
+
+
 def _tracer_invoke(adapter: Any) -> Any:
     with adapter.span("canonical.unit", action="canonical"):
         adapter.record_token_usage(TokenUsage(input_tokens=7, output_tokens=2), "canonical-model")
@@ -217,6 +236,13 @@ CANONICAL_CALLS: dict[str, PortCase] = {
         answered=_warning_answered,
         managed_refusal=(ImportError,),
         detail="draft a customer warning from the verdict",
+    ),
+    "guardrail": PortCase(
+        invoke=_guardrail_invoke,
+        answered=_guardrail_answered,
+        # The lazy `google.cloud.modelarmor_v1` import is the first thing the managed screen does.
+        managed_refusal=(ImportError,),
+        detail="screen one benign warning draft and allow it unchanged (rule R1)",
     ),
     "tracer": PortCase(
         invoke=_tracer_invoke,

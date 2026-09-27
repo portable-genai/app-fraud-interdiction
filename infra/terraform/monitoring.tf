@@ -17,10 +17,11 @@
 #     to decide whether enforcing would break a legitimate path.
 #   - cmek_changes : a CMEK key destroy or update. Key material changing is a P-09 event.
 #   - edge_denials : Cloud Armor denied or throttled a request at the edge.
-#
-# There is deliberately no guardrail-block metric. A rendered repo binds no guardrail port yet
-# (COMPLIANCE rule R1 records that as owed), and a metric whose filter can never match is a
-# green light nobody earned. Add it in the same commit that binds the guardrail.
+#   - guardrail_blocked : the guardrail refused a direction of the customer-warning draft, or
+#     could not decide (rule R1). The domain writes each refusal as its own audit record whose
+#     jsonPayload.action is "guardrail_blocked" (domain/interdiction_service.py
+#     GUARDRAIL_BLOCKED_ACTION), and the deterministic warning ships instead, so a spike here is
+#     an injection attempt or a guardrail outage that customers never see directly.
 #
 # Alert policies are always created; var.alert_notification_channels attaches the channels.
 #
@@ -31,6 +32,10 @@ locals {
     critical_escalations = {
       description = "Critical-severity escalation recorded in the app audit log (maker-checker, P-06)"
       filter      = "logName=\"projects/${var.project_id}/logs/${local.audit_log_name}\" AND jsonPayload.decision=\"escalated\" AND jsonPayload.severity=\"critical\""
+    }
+    guardrail_blocked = {
+      description = "Guardrail refused or could not screen a customer-warning draft (rule R1)"
+      filter      = "logName=\"projects/${var.project_id}/logs/${local.audit_log_name}\" AND jsonPayload.action=\"guardrail_blocked\""
     }
     sa_key_creation = {
       description = "Service-account key created (org policy should forbid this)"

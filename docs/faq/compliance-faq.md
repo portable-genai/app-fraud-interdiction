@@ -43,9 +43,9 @@ The pattern rows and their ORDER are this vertical's choice (`JURISDICTIONS` in 
 national-ID rows first and universal email and phone rows last); set them for the markets you
 serve. Parties on a `PaymentEvent` are opaque references tokenised upstream, and money is carried
 in integer minor units so a verdict is byte-identical on replay. The runtime guardrail and DLP
-engine itself is the sibling `agent-guardrail-gateway`, which this repo does NOT bind yet: rule R1 is
-marked Partial for exactly that reason, which is survivable today only because no live model call
-exists.
+engine itself is the sibling `agent-guardrail-gateway`, which this repo binds through `GuardrailPort`
+(rule R1): the warning request is screened before a draft and the draft after it, and a refusal is
+audited and replaced by the deterministic warning.
 
 ### How is the work auditable and reproducible?
 
@@ -84,7 +84,7 @@ generator lazily imports the SDK and raises, it is listed in
 is bound. What runs is a deterministic template generator. [`../model-card.md`](../model-card.md)
 records that boundary, what validates a draft, what happens to a bad one, and the controls still
 owed (a pinned model id and version, a token budget, a rate limit and a kill switch, a
-managed-profile eval run, and `agent-guardrail-gateway` injection screening). The offline gate
+managed-profile eval run); `agent-guardrail-gateway` injection screening is bound. The offline gate
 (`eval/run_eval.py --mode smoke`) scores six metrics against the dataset's OWN `expected_*`
 oracle, never against the pipeline's own answer: `verdict_accuracy` plus a per-market split for
 SG and AU (0.80), `pii_safety` (0.99), `warning_groundedness` (0.99) and `review_safety` (1.0).
@@ -114,7 +114,7 @@ and n/a, and a rendered repo starts on TODO for several rows by design, because 
 control before it exists is worse than owing it. Currently open and worth knowing before you cite
 this document: P-05 grounding and rule R3 (no retrieval port exists, so there is nothing to
 ground), P-10 resilience (only the review outbox degrades correctly today), P-11 cost and latency
-(no model call to route or cache), R1 (no `GuardrailPort` bound to `agent-guardrail-gateway`), R2 (traces and audit are
+(no model call to route or cache), R2 (traces and audit are
 not yet in the shared `agent-observability` sink), R4 (the A2A card is served but not registered with `agent-registry`), and
 R5 (the `model-quality-gate` bundle is not registered). `../practices-audit.md` records the per-check verdict
 against the catalog's common base practices alongside it.

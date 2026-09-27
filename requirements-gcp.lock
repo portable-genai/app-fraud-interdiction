@@ -57,6 +57,7 @@ google-api-core==2.39.0
     #   google-cloud-contact-center-insights
     #   google-cloud-core
     #   google-cloud-logging
+    #   google-cloud-modelarmor
 google-auth==2.58.1
     # via
     #   app-fraud-interdiction (pyproject.toml)
@@ -66,6 +67,7 @@ google-auth==2.58.1
     #   google-cloud-contact-center-insights
     #   google-cloud-core
     #   google-cloud-logging
+    #   google-cloud-modelarmor
     #   google-genai
 google-cloud-appengine-logging==1.10.0
     # via google-cloud-logging
@@ -80,6 +82,8 @@ google-cloud-core==2.7.0
     #   google-cloud-bigquery
     #   google-cloud-logging
 google-cloud-logging==3.16.3
+    # via app-fraud-interdiction (pyproject.toml)
+google-cloud-modelarmor==0.7.1
     # via app-fraud-interdiction (pyproject.toml)
 google-crc32c==1.9.0
     # via google-resumable-media
@@ -103,6 +107,7 @@ grpcio==1.84.0
     #   google-cloud-appengine-logging
     #   google-cloud-contact-center-insights
     #   google-cloud-logging
+    #   google-cloud-modelarmor
     #   googleapis-common-protos
     #   grpc-google-iam-v1
     #   grpcio-status
@@ -139,6 +144,7 @@ proto-plus==1.28.4
     #   google-cloud-appengine-logging
     #   google-cloud-contact-center-insights
     #   google-cloud-logging
+    #   google-cloud-modelarmor
 protobuf==7.36.2
     # via
     #   google-api-core
@@ -146,6 +152,7 @@ protobuf==7.36.2
     #   google-cloud-audit-log
     #   google-cloud-contact-center-insights
     #   google-cloud-logging
+    #   google-cloud-modelarmor
     #   googleapis-common-protos
     #   grpc-google-iam-v1
     #   grpcio-status

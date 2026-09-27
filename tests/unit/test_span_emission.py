@@ -57,6 +57,7 @@ def _assess(event: PaymentEvent) -> tuple[_RecordingTracer, InterdictionAssessme
         warning_generator=container.warning_generator,
         audit=container.audit,
         tracer=tracer,  # type: ignore[arg-type]
+        guardrail=container.guardrail,
         conversation_channel=container.conversation_channel,
         packs=load_packs(),
         lexicon=load_scam_lexicon(),

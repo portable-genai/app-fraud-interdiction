@@ -44,6 +44,20 @@ iap_audience: ${SCAMINTERDICT_IAP_AUDIENCE:-}
 # deliberately distinct from this service's own inbound SCAMINTERDICT_S2S_TOKEN.
 review_url: ${HUMAN_REVIEW_URL:-}
 
+# Rule R1: the Model Armor template the `gcp` guardrail adapter screens the customer-warning
+# draft's input and output through, and the regional host it calls (never the global endpoint,
+# P-05). `template_id` matches the template `infra/terraform/model_armor.tf` creates, so a
+# zero-edit deploy names a template its own Terraform provisions. Guardrail on
+# (SCAMINTERDICT_GUARDRAIL, unset means on) under the managed profile REFUSES TO BOOT when
+# template_id is empty and the bound adapter is ModelArmorGuardrailAdapter;
+# SCAMINTERDICT_GUARDRAIL=off states the guardrail off.
+model_armor:
+  template_id: ${SCAMINTERDICT_MODEL_ARMOR_TEMPLATE:-app-fraud-interdiction-guardrail}
+  host: ${SCAMINTERDICT_MODEL_ARMOR_HOST:-modelarmor.asia-southeast1.rep.googleapis.com}
+  # The deadline on every sanitize call. A timeout fails CLOSED (audited, then the deterministic
+  # warning ships instead of any model draft).
+  timeout_seconds: 10.0
+
 # The per-port adapter map: the ONLY place a binding lives, so switching the whole stack is a
 # configuration change rather than a code edit. Every port must bind every profile; the loader
 # refuses a partial block and `tests/test_settings_file.py` fails the build if this drifts from
@@ -55,6 +69,12 @@ adapters:
     local: app_fraud_interdiction.adapters.local.audit:LocalAuditAdapter
     gcp: app_fraud_interdiction.adapters.gcp.audit:CloudAuditAdapter
     onprem: app_fraud_interdiction.adapters.onprem.audit:OnPremAuditAdapter
+  # Rule R1: screens the customer-warning draft's input (before) and output (after). local is a
+  # deterministic heuristic stand-in; there is no offline emulator for Model Armor.
+  guardrail:
+    local: app_fraud_interdiction.adapters.local.guardrail:LocalHeuristicGuardrailAdapter
+    gcp: app_fraud_interdiction.adapters.gcp.guardrail:ModelArmorGuardrailAdapter
+    onprem: app_fraud_interdiction.adapters.onprem.guardrail:OnPremGuardrailAdapter
   identity:
     local: app_fraud_interdiction.adapters.local.identity:LocalIdentityAdapter
     gcp: app_fraud_interdiction.adapters.gcp.identity:IapIdentityAdapter

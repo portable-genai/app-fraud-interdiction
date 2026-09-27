@@ -119,8 +119,8 @@ enterprise-wide, `agent-observability`.
 
 ## What is explicitly out of scope for this repo?
 
-The prompt-injection and output-screening engine (`agent-guardrail-gateway`, and note it is NOT bound yet, which
-`COMPLIANCE.md` rule R1 states plainly), the governed knowledge base (`enterprise-knowledge-base`), the agent
+The prompt-injection and output-screening engine (`agent-guardrail-gateway`, bound through `GuardrailPort`
+as `COMPLIANCE.md` rule R1 records), the governed knowledge base (`enterprise-knowledge-base`), the agent
 registry (`agent-registry`), the AI-quality and promotion gate (`model-quality-gate`), the enterprise WORM audit and
 tracing sink (`agent-observability`), the human-review console (`human-review-console`), and the intake architecture
 validator (`architecture-validator`). This repo integrates those through ports rather than re-implementing them.

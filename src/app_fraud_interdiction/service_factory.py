@@ -21,6 +21,7 @@ def build_service(container: Container | None = None) -> InterdictionService:
         warning_generator=resolved.warning_generator,
         audit=resolved.audit,
         tracer=resolved.tracer,
+        guardrail=resolved.guardrail,
         conversation_channel=resolved.conversation_channel,
         packs=load_packs(),
         lexicon=load_scam_lexicon(),

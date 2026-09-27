@@ -842,6 +842,10 @@ def _exit_warning_generator(container: Any) -> Any:
     )
 
 
+def _exit_guardrail(container: Any) -> Any:
+    return container.guardrail.screen("please summarise the payment status", kernel.Direction.INPUT)
+
+
 def _exit_tracer(container: Any) -> Any:
     with container.tracer.span("exit.tour", action="portability"):
         return None
@@ -860,6 +864,7 @@ def _exit_evaluation(container: Any) -> Any:
 #: was skipping the seam whose exit behaviour matters most.
 EXIT_CALLS: dict[str, Callable[[Any], Any]] = {
     "audit": _exit_audit,
+    "guardrail": _exit_guardrail,
     "identity": _exit_identity,
     "review_router": _exit_review,
     "tracer": _exit_tracer,
