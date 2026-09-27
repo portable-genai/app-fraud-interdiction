@@ -198,8 +198,9 @@ owned by sibling platform services; integrate rather than rebuild them (see
   `app-fraud-interdiction` and refuses to run off the managed profile; registering that bundle
   and its thresholds with `model-quality-gate` is yours (P-08, rule R5).
 - `agent-observability` and immutable WORM audit: `adapters/gcp/tracer.py` sends OTLP to the
-  `agent-observability` collector when `OTEL_EXPORTER_OTLP_ENDPOINT` is set and to Cloud Trace when it is not.
-  The audit half is local and tamper-evident today; pointing it at the shared sink is rule R2.
+  `agent-observability` collector named by `OTEL_EXPORTER_OTLP_ENDPOINT`, and refuses to trace when
+  it is unset: there is no direct Cloud Trace path. The audit half is local and tamper-evident
+  today; pointing it at the shared sink is rule R2.
 - `human-review-console` human-review and maker-checker console: every hold and block is ROUTED there over the
   shared `review-kit` in the same request that produced it (rule R8). You wire your
   endpoint (`HUMAN_REVIEW_URL`) and the outbound `HUMAN_REVIEW_S2S_TOKEN` /
