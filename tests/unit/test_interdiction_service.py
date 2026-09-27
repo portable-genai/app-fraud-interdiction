@@ -131,6 +131,7 @@ def test_a_failing_generator_falls_back_to_the_deterministic_template() -> None:
         warning_generator=_BrokenGenerator(),
         audit=container.audit,
         tracer=container.tracer,
+        guardrail=container.guardrail,
         conversation_channel=container.conversation_channel,
         packs=load_packs(),
         lexicon=load_scam_lexicon(),
@@ -154,6 +155,7 @@ def test_a_generator_that_invents_a_figure_is_discarded() -> None:
         warning_generator=_LyingGenerator(),
         audit=container.audit,
         tracer=container.tracer,
+        guardrail=container.guardrail,
         conversation_channel=container.conversation_channel,
         packs=load_packs(),
         lexicon=load_scam_lexicon(),
@@ -188,6 +190,7 @@ def test_every_number_is_identical_whatever_the_generator_does() -> None:
             warning_generator=generator,  # type: ignore[arg-type]
             audit=container.audit,
             tracer=container.tracer,
+            guardrail=container.guardrail,
             conversation_channel=container.conversation_channel,
             packs=load_packs(),
             lexicon=load_scam_lexicon(),

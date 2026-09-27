@@ -17,6 +17,7 @@ from hex_service_kit.identity import IdentityPort
 from .audit import AuditSinkPort
 from .conversation_channel import ConversationChannelPort
 from .features import FeaturePort
+from .guardrail import GuardrailPort
 from .identity import (
     CLIENT_ASSERTED,
     END_USER_AUTH_ATTR,
@@ -38,6 +39,7 @@ from .warning_generator import WarningGeneratorPort
 #: port name (the key in the settings ``adapters:`` block) -> the Protocol it must satisfy.
 PORT_PROTOCOLS: dict[str, type] = {
     "audit": AuditSinkPort,
+    "guardrail": GuardrailPort,
     "identity": IdentityPort,
     "review_router": ReviewRouterPort,
     "payment_stream": PaymentStreamPort,
@@ -62,6 +64,7 @@ __all__ = [
     "ConversationChannelPort",
     "EndUserAuthUnavailableError",
     "FeaturePort",
+    "GuardrailPort",
     "IdentityPort",
     "PaymentStreamPort",
     "ReviewRouterPort",

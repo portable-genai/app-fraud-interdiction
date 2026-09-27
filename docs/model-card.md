@@ -109,10 +109,12 @@ controls for it.
   `app-fraud-interdiction`, but that bundle and its thresholds are not registered yet, so gate
   mode has no authority to ask. Register it, then score real drafts against the same golden
   cases.
-- **Prompt-injection screening through `agent-guardrail-gateway`** (rule R1). No `GuardrailPort` exists. The customer
-  memo and the call transcript are attacker-influenceable text; today neither reaches a model,
-  which is why the gap is survivable, and the moment one does the screen must be in front of it,
-  failing closed to deterministic-only when the screen is unavailable.
+- **Prompt-injection screening through `agent-guardrail-gateway`** (rule R1) is bound: `GuardrailPort` screens the
+  warning request before a draft and the draft after it, and fails closed to the deterministic
+  warning (audited `guardrail_blocked`) on a refusal or when the screen is unavailable. What is
+  still owed is a real model behind it: the customer memo and the call transcript are
+  attacker-influenceable text, and neither reaches the generator today; a fork that folds either
+  into the warning request is screened by the same INPUT screen, because it serialises every field.
 - **Grounding through `enterprise-knowledge-base`** (P-05, rule R3). There is no retrieval port, so there is nothing to
   ground and the row is honestly open rather than quietly claimed.
 

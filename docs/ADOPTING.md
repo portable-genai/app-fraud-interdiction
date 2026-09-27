@@ -184,9 +184,10 @@ owned by sibling platform services; integrate rather than rebuild them (see
 [`faq/features-faq.md`](faq/features-faq.md) for the full map). G3's mandatory dependencies are
 `agent-guardrail-gateway`, `agent-observability` and `model-quality-gate`.
 
-- `agent-guardrail-gateway`: NOT integrated yet, and honestly marked as such (`COMPLIANCE.md`
-  rule R1). Redaction is in place at every boundary, but there is no `GuardrailPort`. Bind one
-  before untrusted text (a customer memo, a call transcript) reaches a live model.
+- `agent-guardrail-gateway`: integrated through `GuardrailPort` (`COMPLIANCE.md` rule R1): the
+  warning request is screened before a draft and the draft after it, through a regional Model
+  Armor template under `gcp`. Keep every field a live model reads inside the screened request
+  when a fork adds untrusted text (a customer memo, a call transcript) to it.
 - `enterprise-knowledge-base` governed knowledge base: not used. This vertical retrieves nothing, so rule R3 reads
   `n/a today` and P-05 is an open TODO. A fork that adds retrieval takes both on.
 - `agent-registry`: the A2A card is built and served at `/.well-known/agent-card.json`
@@ -229,6 +230,6 @@ a confirmed scam belongs to those systems.
       metric names your fork uses.
 - [ ] Reviewed the deploy posture (Dockerfile, all of `infra/terraform/`, the bind address) and
       cleared `INCOMPLETE_MANAGED_OPERATIONS` before serving the managed profile.
-- [ ] Wired your `human-review-console` endpoint, decided which sibling systems you integrate vs stub, and bound a
-      `agent-guardrail-gateway` before any live model sees untrusted text.
+- [ ] Wired your `human-review-console` endpoint, decided which sibling systems you integrate vs stub, and kept the
+      `agent-guardrail-gateway` screen (`GuardrailPort`) in front of any live model.
 - [ ] Recorded your baseline upstream tag so you can take future fixes.

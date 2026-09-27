@@ -19,8 +19,10 @@ startup and Terraform serving authorization until its live integration test exis
 - `domain/` : pure stdlib, no cloud/framework imports. `kernel.py` (vertical-neutral types,
   `StrEnum` taxonomies from the commons), `models.py` (the interdiction artifacts), `pii.py` (the
   jurisdiction pattern selection + order), `interdiction_engine.py` and `interdiction_service.py` (the deterministic engine and its orchestrator).
-- `ports/` : `@runtime_checkable` Protocols (`AuditSinkPort`, `ReviewRouterPort`; identity uses
-  the commons `IdentityPort`), re-exported once with the `PORT_PROTOCOLS` map. `identity.py` adds
+- `ports/` : `@runtime_checkable` Protocols (`AuditSinkPort`, `GuardrailPort`, `ReviewRouterPort`;
+  identity uses the commons `IdentityPort`), re-exported once with the `PORT_PROTOCOLS` map.
+  `guardrail.py` screens the one generation call, the customer-warning draft, INPUT before the
+  draft is requested and OUTPUT before it is used (rule R1); `identity.py` adds
   this service's own identity vocabulary: what an adapter DECLARES about the end-user
   authentication it provides (`VERIFIED` / `CLIENT_ASSERTED` / `UNIMPLEMENTED`), which is what the
   loopback exposure guard reads, plus the refusal type that carries a status and a reason when no
@@ -58,7 +60,10 @@ data only). `contract/canonical.py` holds ONE canonical request per port, so the
 behavioural suites cannot quietly assert different things.
 
 ## Request pipeline (`InterdictionService.assess`, then the caller)
-deterministic verdict (allow/warn/hold/block) -> grounded-or-fallback warning -> redact-before-audit (P-04) -> route hold/block to `human-review-console` (R8) -> already
+deterministic verdict (allow/warn/hold/block) -> **guardrail screen the warning prompt INPUT
+(R1)** -> draft -> **guardrail screen the draft OUTPUT (R1)**, a refusal or an undecided screen
+audited `guardrail_blocked` and the deterministic warning shipped instead -> grounded-or-fallback
+warning -> redact-before-audit (P-04) -> route hold/block to `human-review-console` (R8) -> already
 redacted WORM audit write -> **route the escalation to `human-review-console` (R8)**. The audit actor and the
 review maker are both the verified `Principal`, never the request body. Routing happens in the
 same request that produced the result, on the API and CLI surfaces alike, so an escalation never
@@ -68,6 +73,7 @@ depends on a later job that may not exist.
 | Port | local | gcp | onprem |
 |---|---|---|---|
 | `AuditSinkPort` | hash-chained SQLite WORM (commons) | Cloud Logging WORM (lazy) | placeholder |
+| `GuardrailPort` | heuristic prompt-injection screen | regional Model Armor template (lazy) | placeholder |
 | `IdentityPort` | seeded personas (commons) | IAP assertion (lazy) | placeholder |
 | `ReviewRouterPort` | review-kit outbox (offline, inspectable) | `human-review-console` service intake over S2S | placeholder |
 
